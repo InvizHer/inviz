@@ -13,6 +13,11 @@ app.use(cors());
 app.use(express.json());
 connectDB();
 
+// Root route
+app.get('/', (req, res) => {
+    res.send('Welcome to my website!'); // You can customize this message
+});
+
 // Routes
 app.use("/api/posts", postsRouter);
 app.use("/api/auth", authRouter);
