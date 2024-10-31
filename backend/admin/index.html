@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </section>
+        <section>
+            <h2>Create Post</h2>
+            <form id="post-form">
+                <input type="text" id="post-title" placeholder="Title" required>
+                <textarea id="post-content" placeholder="Content" required></textarea>
+                <input type="text" id="post-image" placeholder="Image URL">
+                <button type="submit">Create Post</button>
+            </form>
+        </section>
+    </main>
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const postForm = document.getElementById('post-form');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                alert('Logged in successfully!');
+            } else {
+                alert(data.error);
+            }
+        });
+
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const imageUrl = document.getElementById('post-image').value;
+
+            const token = localStorage.getItem('token');
+
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ title, content, imageUrl }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Post created successfully!');
+            } else {
+                alert(data.error);
+            }
+        });
+    </script>
+</body>
+</html>
